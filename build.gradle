@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //Production dependencies
+    compile "com.google.code.gson:gson:2.8.5"
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+mainClassName = 'com.challenge.Main'
+
+jar {
+    baseName = 'challenge'
+    version =  '1.0.0'
+}
