@@ -1,5 +1,12 @@
 package com.challenge;
 
+import com.challenge.order.Order;
+import com.challenge.shelf.BasicShelf;
+import com.challenge.shelf.Shelf;
+import com.challenge.ui.DispatcherUICallback;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -9,75 +16,81 @@ public class Kitchen {
     private final Shelf coldShelf;
     private final Shelf frozenShelf;
     private final Shelf overFlowShelf;
+    private final DispatcherUICallback uiCallback;
 
-    public Kitchen(List<Shelf> shelves) {
+    public Kitchen(List<BasicShelf> shelves, DispatcherUICallback dispatcherUICallback) {
         hotShelf = shelves.get(0);
         coldShelf = shelves.get(1);
         frozenShelf = shelves.get(2);
         overFlowShelf = shelves.get(3);
+        this.uiCallback = dispatcherUICallback;
     }
 
-    public synchronized void addOrderToShelves(Order order) {
+    public synchronized boolean addOrderToShelves(Order order) {
         boolean wasAddedToShelf = false;
 
         switch (order.getTemp()) {
             case "hot":
-                if (hotShelf.size() < 15) {
-                    hotShelf.addOrderToShelf(order);
-                    wasAddedToShelf = true;
-                }
+                wasAddedToShelf = hotShelf.add(order);
                 break;
             case "cold":
-                if (coldShelf.size() < 15) {
-                    coldShelf.addOrderToShelf(order);
-                    wasAddedToShelf = true;
-                }
+                wasAddedToShelf = coldShelf.add(order);
                 break;
             case "frozen":
-                if (frozenShelf.size() < 15) {
-                    frozenShelf.addOrderToShelf(order);
-                    wasAddedToShelf = true;
-                }
+                wasAddedToShelf = frozenShelf.add(order);
                 break;
         }
 
-        if (!wasAddedToShelf && overFlowShelf.size() < 20) {
-            overFlowShelf.addOrderToShelf(order);
+        if (!wasAddedToShelf) {
+            wasAddedToShelf = overFlowShelf.add(order);
         }
+
+        updateUi();
+
+        return wasAddedToShelf;
     }
 
-    public synchronized void removeOrderFromShelves(Order order) {
+    public synchronized boolean removeOrderFromShelves(Order order) {
         boolean wasRemovedFromShelf = false;
 
         switch (order.getTemp()) {
             case "hot":
-                if (hotShelf.contains(order)) {
-                    hotShelf.removeOrderFromShelf(order);
-                    wasRemovedFromShelf = true;
-                }
+                wasRemovedFromShelf = hotShelf.remove(order);
                 break;
             case "cold":
-                if (coldShelf.contains(order)) {
-                    coldShelf.removeOrderFromShelf(order);
-                    wasRemovedFromShelf = true;
-                }
+                wasRemovedFromShelf = coldShelf.remove(order);
                 break;
             case "frozen":
-                if (frozenShelf.contains(order)) {
-                    frozenShelf.removeOrderFromShelf(order);
-                    wasRemovedFromShelf = true;
-                }
+                wasRemovedFromShelf = frozenShelf.remove(order);
                 break;
         }
 
-        if (!wasRemovedFromShelf && overFlowShelf.contains(order)) {
-            overFlowShelf.removeOrderFromShelf(order);
+        if (!wasRemovedFromShelf) {
+            wasRemovedFromShelf = overFlowShelf.remove(order);
         }
 
         maybeMoveOverFlowOrders();
 
+        updateUi();
+
+        return wasRemovedFromShelf;
+
     }
 
+    private synchronized void updateUi() {
+        List<Shelf> shelvesToDisplay = new ArrayList<>();
+        shelvesToDisplay.add(hotShelf);
+        shelvesToDisplay.add(coldShelf);
+        shelvesToDisplay.add(frozenShelf);
+        shelvesToDisplay.add(overFlowShelf);
+
+        uiCallback.onDataUpdated(shelvesToDisplay);
+    }
+
+    /*
+
+    reconsider if this is needed
+     */
     public synchronized boolean isOrderOnShelves(Order order) {
         return hotShelf.contains(order)
                 || coldShelf.contains(order)
@@ -95,6 +108,10 @@ public class Kitchen {
                 && coldShelf.isEmpty()
                 && frozenShelf.isEmpty()
                 && overFlowShelf.isEmpty();
+    }
+
+    public synchronized List<String> getShelfTypes() {
+        return Arrays.asList(hotShelf.getType(), coldShelf.getType(), frozenShelf.getType(), overFlowShelf.getType());
     }
 
     // TODO Clean up javadoc

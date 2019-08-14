@@ -1,5 +1,6 @@
 package com.challenge;
 
+import com.challenge.order.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

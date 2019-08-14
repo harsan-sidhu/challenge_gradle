@@ -1,5 +1,9 @@
 package com.challenge;
 
+import com.challenge.order.Order;
+import com.challenge.shelf.*;
+import com.challenge.ui.DispatcherUICallback;
+import com.challenge.ui.OrderFulfillerUI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.math3.distribution.PoissonDistribution;
@@ -9,7 +13,9 @@ import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -19,24 +25,36 @@ public class Main {
         // Parse and Queue Orders
         ConcurrentLinkedQueue<Order> orderQueue = parseJSONAndQueueOrders();
 
-        // Initialize Shelves Data
-        DefaultListModel<Order> hotShelfListModel = new DefaultListModel<>();
-        DefaultListModel<Order> coldShelfListModel = new DefaultListModel<>();
-        DefaultListModel<Order> frozenShelfListModel = new DefaultListModel<>();
-        DefaultListModel<Order> overflowShelfListModel = new DefaultListModel<>();
-        Kitchen kitchen = initShelves(hotShelfListModel, coldShelfListModel, frozenShelfListModel, overflowShelfListModel);
+
+        List<BasicShelf> shelves
+                = Arrays.asList(
+                new HotShelf(new ConcurrentLinkedQueue<>()),
+                new ColdShelf(new ConcurrentLinkedQueue<>()),
+                new FrozenShelf(new ConcurrentLinkedQueue<>()),
+                new OverflowShelf(new ConcurrentLinkedQueue<>()));
+
+        OrderFulfillerUI ui = new OrderFulfillerUI(getConfigurationForShelves(shelves));
+
+        Kitchen kitchen = new Kitchen(shelves, ui);
 
         // Begin Processing Orders
-        OrderPlacer orderPlacer
-                = new OrderPlacer(
+        OrderFulfiller orderFulfiller
+                = new OrderFulfiller(
                 new ScheduledThreadPoolExecutor(50),
                 kitchen,
                 new OrderValueCalculator(kitchen),
                 new DriverDispatcher(kitchen));
-        orderPlacer.placeOrders(orderQueue, new PoissonDistribution(3.25));
+        orderFulfiller.placeOrders(orderQueue, new PoissonDistribution(3.25));
 
-        // Show All Shelves In GUI
-        showGUI(hotShelfListModel, coldShelfListModel, frozenShelfListModel, overflowShelfListModel);
+        ui.show();
+    }
+
+    private static List<String> getConfigurationForShelves(List<BasicShelf> shelves) {
+        List<String> shelfConfiguration = new ArrayList<>();
+        for (Shelf shelf : shelves) {
+            shelfConfiguration.add(shelf.getType());
+        }
+        return shelfConfiguration;
     }
 
     private static ConcurrentLinkedQueue<Order> parseJSONAndQueueOrders() throws FileNotFoundException {
@@ -46,20 +64,7 @@ public class Main {
 
     }
 
-    private static Kitchen initShelves(
-            DefaultListModel<Order> hotShelfListModel,
-            DefaultListModel<Order> coldShelfListModel,
-            DefaultListModel<Order> frozenShelfListModel,
-            DefaultListModel<Order> overflowShelfListModel) {
-        HotShelf hotShelf = new HotShelf(new ConcurrentLinkedQueue<>(), hotShelfListModel);
-        ColdShelf coldShelf = new ColdShelf(new ConcurrentLinkedQueue<>(), coldShelfListModel);
-        FrozenShelf frozenShelf = new FrozenShelf(new ConcurrentLinkedQueue<>(), frozenShelfListModel);
-        OverflowShelf overFlowShelf = new OverflowShelf(new ConcurrentLinkedQueue<>(), overflowShelfListModel);
-
-        return new Kitchen(Arrays.asList(hotShelf, coldShelf, frozenShelf, overFlowShelf));
-    }
-
-    private static void showGUI(
+    /*private static void showGUI(
             DefaultListModel<Order> hotShelfListModel,
             DefaultListModel<Order> coldShelfListModel,
             DefaultListModel<Order> frozenShelfListModel,
@@ -80,5 +85,5 @@ public class Main {
         jFrame.add(panel);
         jFrame.setSize(1000, 800);
         jFrame.setVisible(true);
-    }
+    }*/
 }

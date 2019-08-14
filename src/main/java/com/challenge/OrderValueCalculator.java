@@ -1,5 +1,7 @@
 package com.challenge;
 
+import com.challenge.order.Order;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 

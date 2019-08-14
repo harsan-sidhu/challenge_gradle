@@ -1,5 +1,6 @@
 package com.challenge;
 
+import com.challenge.order.Order;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
 import java.util.Queue;
@@ -8,14 +9,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class OrderPlacer {
+public class OrderFulfiller {
 
     private final ScheduledExecutorService executorService;
     private final Kitchen kitchen;
     private final DriverDispatcher driverDispatcher;
     private final OrderValueCalculator orderValueCalculator;
 
-    public OrderPlacer(ScheduledExecutorService executorService, Kitchen kitchen, OrderValueCalculator orderValueCalculator, DriverDispatcher driverDispatcher) {
+    public OrderFulfiller(ScheduledExecutorService executorService, Kitchen kitchen, OrderValueCalculator orderValueCalculator, DriverDispatcher driverDispatcher) {
         this.executorService = executorService;
         this.kitchen = kitchen;
         this.orderValueCalculator = orderValueCalculator;
