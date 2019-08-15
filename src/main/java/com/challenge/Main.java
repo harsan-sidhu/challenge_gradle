@@ -41,7 +41,7 @@ public class Main {
         Kitchen kitchen = new Kitchen(shelves, ui);
         OrderFulfiller orderFulfiller
                 = new OrderFulfiller(
-                new ScheduledThreadPoolExecutor(orderQueue.size()),
+                new ScheduledThreadPoolExecutor(4),
                 kitchen,
                 new DeliveryPickupDispatcher(kitchen));
         orderFulfiller.placeOrders(orderQueue, new PoissonDistribution(3.25));

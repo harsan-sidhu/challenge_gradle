@@ -13,17 +13,17 @@ public class OverflowShelf extends BasicShelf {
     }
 
     @Override
-    public synchronized String getType() {
+    public String getType() {
         return "overflow";
     }
 
     @Override
-    public synchronized int capacity() {
+    public int capacity() {
         return OVERFLOW_SHELF_CAPACITY;
     }
 
     @Override
-    public synchronized double decayMultiplier() {
+    public double decayMultiplier() {
         return 2;
     }
 }

@@ -13,17 +13,17 @@ public class ColdShelf extends BasicShelf {
     }
 
     @Override
-    public synchronized String getType() {
+    public String getType() {
         return "cold";
     }
 
     @Override
-    public synchronized int capacity() {
+    public int capacity() {
         return COLD_SHELF_CAPACITY;
     }
 
     @Override
-    public synchronized double decayMultiplier() {
+    public double decayMultiplier() {
         return 1;
     }
 }

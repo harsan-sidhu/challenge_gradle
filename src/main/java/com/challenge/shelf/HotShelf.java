@@ -13,17 +13,17 @@ public class HotShelf extends BasicShelf {
     }
 
     @Override
-    public synchronized String getType() {
+    public String getType() {
         return "hot";
     }
 
     @Override
-    public synchronized int capacity() {
+    public int capacity() {
         return HOT_SHELF_CAPACITY;
     }
 
     @Override
-    public synchronized double decayMultiplier() {
+    public double decayMultiplier() {
         return 1;
     }
 }

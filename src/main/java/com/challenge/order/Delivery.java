@@ -21,7 +21,7 @@ public class Delivery {
         return order;
     }
 
-    public long getOrderPlacedTimeStamp() {
+    private long getOrderPlacedTimeStamp() {
         return orderPlacedTimeStamp;
     }
 
@@ -38,7 +38,7 @@ public class Delivery {
         this.shelf = shelf;
     }
 
-    public Shelf getShelf() {
+    public synchronized Shelf getShelf() {
         return shelf;
     }
 }
