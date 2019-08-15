@@ -1,17 +1,14 @@
 package com.challenge.shelf;
 
-import com.challenge.order.Order;
+import com.challenge.order.Delivery;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class OverflowShelf extends BasicShelf {
 
     private static final int OVERFLOW_SHELF_CAPACITY = 20;
 
-    public OverflowShelf(ConcurrentLinkedQueue<Order> overFlowShelf) {
+    public OverflowShelf(ConcurrentLinkedQueue<Delivery> overFlowShelf) {
         super(overFlowShelf);
     }
 
@@ -21,7 +18,12 @@ public class OverflowShelf extends BasicShelf {
     }
 
     @Override
-    public int capacity() {
+    public synchronized int capacity() {
         return OVERFLOW_SHELF_CAPACITY;
+    }
+
+    @Override
+    public synchronized double decayMultiplier() {
+        return 2;
     }
 }

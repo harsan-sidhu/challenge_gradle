@@ -1,21 +1,20 @@
 package com.challenge.shelf;
 
-import com.challenge.order.Order;
+import com.challenge.order.Delivery;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public interface Shelf {
 
     String getType();
 
-    ConcurrentLinkedQueue<Order> getOrders();
+    ConcurrentLinkedQueue<Delivery> getOrders();
 
-    boolean add(Order order);
+    boolean add(Delivery order);
 
-    boolean remove(Order order);
+    boolean remove(Delivery order);
 
-    boolean contains(Order order);
+    boolean contains(Delivery order);
 
     boolean isEmpty();
 
@@ -23,4 +22,7 @@ public interface Shelf {
 
     int capacity();
 
+    void maybeTrashSpoiledOrders();
+
+    double decayMultiplier();
 }

@@ -1,7 +1,9 @@
 package com.challenge.ui;
 
+import com.challenge.order.Delivery;
 import com.challenge.order.Order;
 import com.challenge.shelf.Shelf;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +41,7 @@ public class OrderFulfillerUI implements DispatcherUICallback {
 
         // Lists
         for (Map.Entry<String, DefaultListModel> entry : typeToList.entrySet()) {
-            panel.add(new JList<DefaultListModel<Order>>(entry.getValue()));
+            panel.add(new JList<DefaultListModel<Pair<String, Double>>>(entry.getValue()));
         }
     }
 
@@ -53,8 +55,8 @@ public class OrderFulfillerUI implements DispatcherUICallback {
                                 if (entry.getKey().equals(shelf.getType())) {
                                     DefaultListModel listModelForShelf = entry.getValue();
                                     listModelForShelf.clear();
-                                    for (Order order : shelf.getOrders()) {
-                                        listModelForShelf.addElement(order);
+                                    for (Delivery order : shelf.getOrders()) {
+                                        listModelForShelf.addElement(new Pair(order.getOrder().getName(), order.getValue()));
                                     }
                                     break;
                                 }

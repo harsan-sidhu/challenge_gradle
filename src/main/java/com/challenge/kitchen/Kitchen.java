@@ -1,12 +1,12 @@
-package com.challenge;
+package com.challenge.kitchen;
 
-import com.challenge.order.Order;
+import com.challenge.order.Delivery;
+import com.challenge.order.OrderValueCalculator;
 import com.challenge.shelf.BasicShelf;
 import com.challenge.shelf.Shelf;
 import com.challenge.ui.DispatcherUICallback;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -26,10 +26,12 @@ public class Kitchen {
         this.uiCallback = dispatcherUICallback;
     }
 
-    public synchronized boolean addOrderToShelves(Order order) {
+    public synchronized boolean addOrderToShelves(Delivery order) {
         boolean wasAddedToShelf = false;
 
-        switch (order.getTemp()) {
+        maybeTrashSpoiledOrders();
+
+        switch (order.getOrder().getTemp()) {
             case "hot":
                 wasAddedToShelf = hotShelf.add(order);
                 break;
@@ -50,10 +52,17 @@ public class Kitchen {
         return wasAddedToShelf;
     }
 
-    public synchronized boolean removeOrderFromShelves(Order order) {
+    private synchronized void maybeTrashSpoiledOrders() {
+        hotShelf.maybeTrashSpoiledOrders();
+        coldShelf.maybeTrashSpoiledOrders();
+        frozenShelf.maybeTrashSpoiledOrders();
+        overFlowShelf.maybeTrashSpoiledOrders();
+    }
+
+    public synchronized boolean removeOrderFromShelves(Delivery order) {
         boolean wasRemovedFromShelf = false;
 
-        switch (order.getTemp()) {
+        switch (order.getOrder().getTemp()) {
             case "hot":
                 wasRemovedFromShelf = hotShelf.remove(order);
                 break;
@@ -74,7 +83,6 @@ public class Kitchen {
         updateUi();
 
         return wasRemovedFromShelf;
-
     }
 
     private synchronized void updateUi() {
@@ -87,31 +95,11 @@ public class Kitchen {
         uiCallback.onDataUpdated(shelvesToDisplay);
     }
 
-    /*
-
-    reconsider if this is needed
-     */
-    public synchronized boolean isOrderOnShelves(Order order) {
-        return hotShelf.contains(order)
-                || coldShelf.contains(order)
-                || frozenShelf.contains(order)
-                || overFlowShelf.contains(order);
-
-    }
-
-    public synchronized boolean isOrderOnOverFlowShelf(Order order) {
-        return overFlowShelf.contains(order);
-    }
-
     public synchronized boolean isEmpty() {
         return hotShelf.isEmpty()
                 && coldShelf.isEmpty()
                 && frozenShelf.isEmpty()
                 && overFlowShelf.isEmpty();
-    }
-
-    public synchronized List<String> getShelfTypes() {
-        return Arrays.asList(hotShelf.getType(), coldShelf.getType(), frozenShelf.getType(), overFlowShelf.getType());
     }
 
     // TODO Clean up javadoc
@@ -124,24 +112,24 @@ public class Kitchen {
     // TO DO consider moving to different class
     private synchronized void maybeMoveOverFlowOrders() {
         if (!overFlowShelf.isEmpty()) {
-            PriorityQueue<Order> hotShelfPriorityQueue = new PriorityQueue<>();
-            PriorityQueue<Order> coldShelfPriorityQueue = new PriorityQueue<>();
-            PriorityQueue<Order> frozenShelfPriorityQueue = new PriorityQueue<>();
-            for (Order overFlowOrder : overFlowShelf.getOrders()) {
-                if (calculateOrderValueAtPickup(overFlowOrder, true) < 0) {
-                    switch (overFlowOrder.getTemp()) {
+            PriorityQueue<Delivery> hotShelfPriorityQueue = new PriorityQueue<>();
+            PriorityQueue<Delivery> coldShelfPriorityQueue = new PriorityQueue<>();
+            PriorityQueue<Delivery> frozenShelfPriorityQueue = new PriorityQueue<>();
+            for (Delivery overFlowOrder : overFlowShelf.getOrders()) {
+                if (calculateOrderValueAtPickup(overFlowOrder, overFlowOrder.getShelf().decayMultiplier()) < 0) {
+                    switch (overFlowOrder.getOrder().getTemp()) {
                         case "hot":
-                            if (calculateOrderValueAtPickup(overFlowOrder, false) > 0) {
+                            if (calculateOrderValueAtPickup(overFlowOrder, hotShelf.decayMultiplier()) > 0) {
                                 hotShelfPriorityQueue.add(overFlowOrder);
                             }
                             break;
                         case "cold":
-                            if (calculateOrderValueAtPickup(overFlowOrder, false) > 0) {
+                            if (calculateOrderValueAtPickup(overFlowOrder, coldShelf.decayMultiplier()) > 0) {
                                 coldShelfPriorityQueue.add(overFlowOrder);
                             }
                             break;
                         case "frozen":
-                            if (calculateOrderValueAtPickup(overFlowOrder, false) > 0) {
+                            if (calculateOrderValueAtPickup(overFlowOrder, frozenShelf.decayMultiplier()) > 0) {
                                 frozenShelfPriorityQueue.add(overFlowOrder);
                             }
                             break;
@@ -149,28 +137,25 @@ public class Kitchen {
                 }
             }
 
-            while (hotShelf.size() < 15 && !hotShelfPriorityQueue.isEmpty()) {
-                Order order = hotShelfPriorityQueue.poll();
+            while (hotShelf.size() < hotShelf.capacity() && !hotShelfPriorityQueue.isEmpty()) {
+                Delivery order = hotShelfPriorityQueue.poll();
                 removeOrderFromShelves(order);
                 addOrderToShelves(order);
             }
-            while (coldShelf.size() < 15 && !coldShelfPriorityQueue.isEmpty()) {
-                Order order = coldShelfPriorityQueue.poll();
+            while (coldShelf.size() < coldShelf.capacity() && !coldShelfPriorityQueue.isEmpty()) {
+                Delivery order = coldShelfPriorityQueue.poll();
                 removeOrderFromShelves(order);
                 addOrderToShelves(order);
             }
-            while (frozenShelf.size() < 15 && !frozenShelfPriorityQueue.isEmpty()) {
-                Order order = frozenShelfPriorityQueue.poll();
+            while (frozenShelf.size() < frozenShelf.capacity() && !frozenShelfPriorityQueue.isEmpty()) {
+                Delivery order = frozenShelfPriorityQueue.poll();
                 removeOrderFromShelves(order);
                 addOrderToShelves(order);
             }
         }
     }
 
-    private static double calculateOrderValueAtPickup(Order order, boolean isOverFlow) {
-        int orderAgeAtPickup = order.getTimeToPickupOrder();
-        double decayRate = isOverFlow ? order.getDecayRate() * 2 : order.getDecayRate();
-        double value = (order.getShelfLife() - orderAgeAtPickup) - (decayRate * orderAgeAtPickup);
-        return value/order.getShelfLife();
+    private static double calculateOrderValueAtPickup(Delivery order, double shelfDecayMultiplier) {
+        return OrderValueCalculator.computeValueOfDelivery(order, order.getPickupTime(), shelfDecayMultiplier);
     }
 }

@@ -1,17 +1,14 @@
 package com.challenge.shelf;
 
-import com.challenge.order.Order;
+import com.challenge.order.Delivery;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ColdShelf extends BasicShelf {
 
     private static final int COLD_SHELF_CAPACITY = 15;
 
-    public ColdShelf(ConcurrentLinkedQueue<Order> coldShelf) {
+    public ColdShelf(ConcurrentLinkedQueue<Delivery> coldShelf) {
         super(coldShelf);
     }
 
@@ -21,7 +18,12 @@ public class ColdShelf extends BasicShelf {
     }
 
     @Override
-    public int capacity() {
+    public synchronized int capacity() {
         return COLD_SHELF_CAPACITY;
+    }
+
+    @Override
+    public synchronized double decayMultiplier() {
+        return 1;
     }
 }

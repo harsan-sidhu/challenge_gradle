@@ -1,99 +1,26 @@
-
 package com.challenge.order;
 
-import com.google.gson.annotations.Expose;
+import com.google.auto.value.AutoValue;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
-// TODO Consider AutoValue
-public class Order {
+@AutoValue
+public abstract class Order {
 
     @SerializedName("name")
-    @Expose
-    private String name;
+    public abstract String getName();
 
     @SerializedName("temp")
-    @Expose
-    private String temp;
+    public abstract String getTemp();
 
     @SerializedName("shelfLife")
-    @Expose
-    private Integer shelfLife;
+    public abstract Integer getShelfLife();
 
     @SerializedName("decayRate")
-    @Expose
-    private Double decayRate;
+    public abstract Double getDecayRate();
 
-    @SerializedName("value")
-    @Expose
-    private Double value;
-
-    @SerializedName("order_time_stamp")
-    @Expose
-    private Long orderTimeStamp;
-
-    @SerializedName("time_to_pickup_order")
-    @Expose
-    private int timeToPickupOrder;
-
-    private String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTemp() {
-        return temp;
-    }
-
-    public void setTemp(String temp) {
-        this.temp = temp;
-    }
-
-    public Integer getShelfLife() {
-        return shelfLife;
-    }
-
-    public void setShelfLife(Integer shelfLife) {
-        this.shelfLife = shelfLife;
-    }
-
-    public Double getDecayRate() {
-        return decayRate;
-    }
-
-    public void setDecayRate(Double decayRate) {
-        this.decayRate = decayRate;
-    }
-
-    private Double getValue() {
-        return value;
-    }
-
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    public Long getOrderTimeStamp() {
-        return orderTimeStamp;
-    }
-
-    public void setOrderTimeStamp(Long orderTimeStamp) {
-        this.orderTimeStamp = orderTimeStamp;
-    }
-
-    // TODO Reconsider this
-    @Override
-    public String toString() {
-        return getName() + " " + getValue();
-    }
-
-    public void setTimeToPickupOrder(int timeToPickupOrder) {
-        this.timeToPickupOrder = timeToPickupOrder;
-    }
-
-    public int getTimeToPickupOrder() {
-        return timeToPickupOrder;
+    public static TypeAdapter<Order> typeAdapter(Gson gson) {
+        return new AutoValue_Order.GsonTypeAdapter(gson);
     }
 }

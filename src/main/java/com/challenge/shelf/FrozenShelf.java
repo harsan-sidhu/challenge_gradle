@@ -1,17 +1,14 @@
 package com.challenge.shelf;
 
-import com.challenge.order.Order;
+import com.challenge.order.Delivery;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FrozenShelf extends BasicShelf {
 
     private static final int FROZEN_SHELF_CAPACITY = 15;
 
-    public FrozenShelf(ConcurrentLinkedQueue<Order> frozenShelf) {
+    public FrozenShelf(ConcurrentLinkedQueue<Delivery> frozenShelf) {
         super(frozenShelf);
     }
 
@@ -21,7 +18,12 @@ public class FrozenShelf extends BasicShelf {
     }
 
     @Override
-    public int capacity() {
+    public synchronized int capacity() {
         return FROZEN_SHELF_CAPACITY;
+    }
+
+    @Override
+    public synchronized double decayMultiplier() {
+        return 1;
     }
 }

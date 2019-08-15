@@ -1,29 +1,31 @@
 package com.challenge;
 
+import com.challenge.order.Delivery;
+import com.challenge.dispatcher.Dispatcher;
+import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Order;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
 import java.util.Queue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class OrderFulfiller {
+class OrderFulfiller {
+
+    private final Lock lock = new ReentrantLock();
 
     private final ScheduledExecutorService executorService;
     private final Kitchen kitchen;
-    private final DriverDispatcher driverDispatcher;
-    private final OrderValueCalculator orderValueCalculator;
+    private final Dispatcher dispatcher;
 
-    public OrderFulfiller(ScheduledExecutorService executorService, Kitchen kitchen, OrderValueCalculator orderValueCalculator, DriverDispatcher driverDispatcher) {
+    OrderFulfiller(ScheduledExecutorService executorService, Kitchen kitchen, Dispatcher dispatcher) {
         this.executorService = executorService;
         this.kitchen = kitchen;
-        this.orderValueCalculator = orderValueCalculator;
-        this.driverDispatcher = driverDispatcher;
+        this.dispatcher = dispatcher;
     }
 
-    public void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
+    synchronized void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
         executorService.scheduleAtFixedRate(
                 () -> {
                     if (orderQueue.isEmpty() && kitchen.isEmpty()) {
@@ -32,19 +34,16 @@ public class OrderFulfiller {
                         int orders = poissonDistribution.sample();
                         for (int i = 0; i < orders; i++) {
                             if (!orderQueue.isEmpty()) {
-                                // Add Order to Shelves
-                                // TODO Consider addOrderToShelves returning a boolean, then not calculating or dispatching if false
                                 Order placedOrder = orderQueue.poll();
-                                placedOrder.setOrderTimeStamp(System.currentTimeMillis());
-                                kitchen.addOrderToShelves(placedOrder);
 
-                                // Calculate Value of Order
-                                orderValueCalculator.beginContinuouslyCalculatingOrder(new ScheduledThreadPoolExecutor(50), placedOrder);
-
-                                // Dispatch Driver To Get Order
+                                long orderTimeStamp = System.currentTimeMillis();
                                 int timeToPickUpOrder = ThreadLocalRandom.current().nextInt(2, 10 + 1);
-                                placedOrder.setTimeToPickupOrder(timeToPickUpOrder);
-                                driverDispatcher.dispatchForOrder(new ScheduledThreadPoolExecutor(50), placedOrder, timeToPickUpOrder);
+                                Delivery delivery = new Delivery(placedOrder, orderTimeStamp, timeToPickUpOrder);
+
+                                if (kitchen.addOrderToShelves(delivery)) {
+                                    dispatcher.dispatchPickupForOrder(
+                                            Executors.newSingleThreadScheduledExecutor(), delivery, timeToPickUpOrder);
+                                }
                             }
                         }
                     }
@@ -52,6 +51,5 @@ public class OrderFulfiller {
                 /* initialDelay */ 0,
                 /* period  */ 1,
                 TimeUnit.SECONDS);
-
     }
 }
