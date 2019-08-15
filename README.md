@@ -8,8 +8,7 @@ Gradle 3.0 >
 Build Instructions
 --------------
 In the project directory:
-1) ./gradlew build
-2) ./gradlew run
+1) ./gradlew run
 
 IntelliJ Instructions
 --------------
