@@ -1,7 +1,7 @@
 package com.challenge;
 
 import com.challenge.order.Delivery;
-import com.challenge.dispatcher.Dispatcher;
+import com.challenge.dispatcher.DeliveryPickupDispatcher;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Order;
 import org.apache.commons.math3.distribution.PoissonDistribution;
@@ -17,12 +17,14 @@ class OrderFulfiller {
 
     private final ScheduledExecutorService executorService;
     private final Kitchen kitchen;
-    private final Dispatcher dispatcher;
+    private final DeliveryPickupDispatcher deliveryPickupDispatcher;
 
-    OrderFulfiller(ScheduledExecutorService executorService, Kitchen kitchen, Dispatcher dispatcher) {
+    OrderFulfiller(ScheduledExecutorService executorService,
+                   Kitchen kitchen,
+                   DeliveryPickupDispatcher deliveryPickupDispatcher) {
         this.executorService = executorService;
         this.kitchen = kitchen;
-        this.dispatcher = dispatcher;
+        this.deliveryPickupDispatcher = deliveryPickupDispatcher;
     }
 
     synchronized void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
@@ -41,7 +43,7 @@ class OrderFulfiller {
                                 Delivery delivery = new Delivery(placedOrder, orderTimeStamp, timeToPickUpOrder);
 
                                 if (kitchen.addOrderToShelves(delivery)) {
-                                    dispatcher.dispatchPickupForOrder(
+                                    deliveryPickupDispatcher.dispatchPickupForOrder(
                                             Executors.newSingleThreadScheduledExecutor(), delivery, timeToPickUpOrder);
                                 }
                             }

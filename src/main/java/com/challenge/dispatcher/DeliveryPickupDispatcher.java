@@ -6,11 +6,11 @@ import com.challenge.kitchen.Kitchen;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Dispatcher {
+public class DeliveryPickupDispatcher {
 
     private final Kitchen kitchen;
 
-    public Dispatcher(Kitchen kitchen) {
+    public DeliveryPickupDispatcher(Kitchen kitchen) {
         this.kitchen = kitchen;
 
     }
