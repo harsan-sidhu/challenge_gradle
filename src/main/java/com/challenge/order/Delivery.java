@@ -10,11 +10,14 @@ public class Delivery {
     private final long orderPlacedTimeStamp;
     private final int pickupTime;
     private Shelf shelf;
+    private double decayedValue;
 
     public Delivery(Order order, long orderPlacedTimeStamp, int pickupTime) {
         this.order = order;
         this.orderPlacedTimeStamp = orderPlacedTimeStamp;
         this.pickupTime = pickupTime;
+
+        decayedValue = 0.0;
     }
 
     public Order getOrder() {
@@ -30,15 +33,28 @@ public class Delivery {
     }
 
     public double getValue() {
-        long orderAge = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - getOrderPlacedTimeStamp());
-        return OrderValueCalculator.computeValueOfDelivery(this, orderAge, shelf.decayMultiplier());
+        Order order = getOrder();
+        return ((order.getShelfLife() - getAge()) - computeDecay())/order.getShelfLife();
     }
 
     public synchronized void setShelf(Shelf shelf) {
         this.shelf = shelf;
+        decayedValue = computeDecay();
     }
 
     public synchronized Shelf getShelf() {
         return shelf;
+    }
+
+    private long getAge() {
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - getOrderPlacedTimeStamp());
+    }
+
+    public double getDecayedValue() {
+        return decayedValue;
+    }
+
+    private double computeDecay() {
+        return (order.getDecayRate() * shelf.decayMultiplier() * getAge()) + decayedValue;
     }
 }

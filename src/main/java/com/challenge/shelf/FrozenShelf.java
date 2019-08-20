@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FrozenShelf extends BasicShelf {
 
+    static final double DECAY_RATE = 1;
+
     private static final int FROZEN_SHELF_CAPACITY = 15;
 
     public FrozenShelf(ConcurrentLinkedQueue<Delivery> frozenShelf) {

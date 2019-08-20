@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ColdShelf extends BasicShelf {
 
+    static final double DECAY_RATE = 1;
+
     private static final int COLD_SHELF_CAPACITY = 15;
 
     public ColdShelf(ConcurrentLinkedQueue<Delivery> coldShelf) {
