@@ -1,6 +1,5 @@
 package com.challenge.dispatcher;
 
-import com.challenge.dispatcher.DeliveryPickupDispatcher;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Delivery;
 import com.challenge.order.Order;
