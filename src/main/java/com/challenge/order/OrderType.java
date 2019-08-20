@@ -2,7 +2,7 @@ package com.challenge.order;
 
 import com.google.gson.annotations.SerializedName;
 
-enum OrderType {
+public enum OrderType {
     @SerializedName("hot")
     HOT,
     @SerializedName("cold")

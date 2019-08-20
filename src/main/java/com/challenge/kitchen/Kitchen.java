@@ -33,15 +33,14 @@ public class Kitchen {
 
         maybeTrashSpoiledOrders();
 
-        //TODO: Consider an enum instead of using strings. It'll make things easier later if you add new types.
         switch (order.getOrder().getTemp()) {
-            case "hot":
+            case HOT:
                 wasAddedToShelf = hotShelf.add(order);
                 break;
-            case "cold":
+            case COLD:
                 wasAddedToShelf = coldShelf.add(order);
                 break;
-            case "frozen":
+            case FROZEN:
                 wasAddedToShelf = frozenShelf.add(order);
                 break;
         }
@@ -68,13 +67,13 @@ public class Kitchen {
         maybeTrashSpoiledOrders();
 
         switch (order.getOrder().getTemp()) {
-            case "hot":
+            case HOT:
                 wasRemovedFromShelf = hotShelf.remove(order);
                 break;
-            case "cold":
+            case COLD:
                 wasRemovedFromShelf = coldShelf.remove(order);
                 break;
-            case "frozen":
+            case FROZEN:
                 wasRemovedFromShelf = frozenShelf.remove(order);
                 break;
         }

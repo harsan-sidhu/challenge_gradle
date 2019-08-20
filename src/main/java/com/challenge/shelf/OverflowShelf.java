@@ -68,11 +68,11 @@ public class OverflowShelf extends BasicShelf {
 
     private static double getTargetShelfDecayRateMultiplier(Delivery delivery) {
         switch(delivery.getOrder().getTemp()) {
-            case "hot":
+            case HOT:
                 return HotShelf.DECAY_RATE;
-            case "cold":
+            case COLD:
                 return ColdShelf.DECAY_RATE;
-            case "frozen":
+            case FROZEN:
                 return FrozenShelf.DECAY_RATE;
             default:
                 // TODO Throw exception instead

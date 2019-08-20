@@ -12,7 +12,7 @@ public abstract class Order {
     public abstract String getName();
 
     @SerializedName("temp")
-    public abstract String getTemp();
+    public abstract OrderType getTemp();
 
     @SerializedName("shelfLife")
     public abstract Integer getShelfLife();
