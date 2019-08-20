@@ -8,5 +8,7 @@ public enum OrderType {
     @SerializedName("cold")
     COLD,
     @SerializedName("frozen")
-    FROZEN
+    FROZEN,
+    @SerializedName("overflow")
+    OVERFLOW
 }

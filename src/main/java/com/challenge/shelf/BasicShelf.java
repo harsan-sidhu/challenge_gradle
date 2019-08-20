@@ -1,6 +1,7 @@
 package com.challenge.shelf;
 
 import com.challenge.order.Delivery;
+import com.challenge.order.OrderType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -62,7 +63,7 @@ public abstract class BasicShelf implements Shelf {
         }
     }
 
-    public abstract String getType();
+    public abstract OrderType getType();
 
     public abstract int capacity();
 

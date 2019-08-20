@@ -1,8 +1,11 @@
 package com.challenge.shelf;
 
 import com.challenge.order.Delivery;
+import com.challenge.order.OrderType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.challenge.order.OrderType.HOT;
 
 public class HotShelf extends BasicShelf {
 
@@ -15,8 +18,8 @@ public class HotShelf extends BasicShelf {
     }
 
     @Override
-    public String getType() {
-        return "hot";
+    public OrderType getType() {
+        return HOT;
     }
 
     @Override

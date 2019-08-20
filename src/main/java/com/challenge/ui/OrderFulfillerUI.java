@@ -2,6 +2,7 @@ package com.challenge.ui;
 
 import com.challenge.order.Delivery;
 import com.challenge.order.Order;
+import com.challenge.order.OrderType;
 import com.challenge.shelf.Shelf;
 import javafx.util.Pair;
 
@@ -15,12 +16,12 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 public class OrderFulfillerUI implements DispatcherUICallback {
 
-    private final Map<String, DefaultListModel> typeToList;
+    private final Map<OrderType, DefaultListModel> typeToList;
     private final JPanel panel;
     private final JFrame jFrame;
 
 
-    public OrderFulfillerUI(List<String> shelfConfiguration) {
+    public OrderFulfillerUI(List<OrderType> shelfTypes) {
         typeToList = new LinkedHashMap<>();
         jFrame = new JFrame();
         panel = new JPanel(new GridLayout(2,4,10,0));
@@ -28,20 +29,20 @@ public class OrderFulfillerUI implements DispatcherUICallback {
         jFrame.setSize(1000, 800);
         jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        layoutUI(shelfConfiguration);
+        layoutUI(shelfTypes);
     }
 
-    private void layoutUI(List<String> shelfConfiguration) {
+    private void layoutUI(List<OrderType> shelfTypes) {
         // Headers
-        for (String shelfType : shelfConfiguration) {
+        for (OrderType shelfType : shelfTypes) {
             DefaultListModel<Order> listModel = new DefaultListModel<>();
             typeToList.put(shelfType, listModel);
-            panel.add(new JLabel(shelfType));
+            panel.add(new JLabel(shelfType.name()));
         }
 
         // Lists
-        for (Map.Entry<String, DefaultListModel> entry : typeToList.entrySet()) {
-            panel.add(new JList<DefaultListModel<Pair<String, Double>>>(entry.getValue()));
+        for (Map.Entry<OrderType, DefaultListModel> entry : typeToList.entrySet()) {
+            panel.add(new JList<DefaultListModel<Pair<OrderType, Double>>>(entry.getValue()));
         }
     }
 
@@ -50,7 +51,7 @@ public class OrderFulfillerUI implements DispatcherUICallback {
         if (!SwingUtilities.isEventDispatchThread()) {
             SwingUtilities.invokeLater(
                     () -> {
-                        for (Map.Entry<String, DefaultListModel> entry : typeToList.entrySet()) {
+                        for (Map.Entry<OrderType, DefaultListModel> entry : typeToList.entrySet()) {
                             for (Shelf shelf : dataToDisplay) {
                                 if (entry.getKey().equals(shelf.getType())) {
                                     DefaultListModel listModelForShelf = entry.getValue();

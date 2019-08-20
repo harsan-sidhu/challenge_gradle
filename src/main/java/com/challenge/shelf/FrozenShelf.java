@@ -1,8 +1,11 @@
 package com.challenge.shelf;
 
 import com.challenge.order.Delivery;
+import com.challenge.order.OrderType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.challenge.order.OrderType.FROZEN;
 
 public class FrozenShelf extends BasicShelf {
 
@@ -15,8 +18,8 @@ public class FrozenShelf extends BasicShelf {
     }
 
     @Override
-    public synchronized String getType() {
-        return "frozen";
+    public synchronized OrderType getType() {
+        return FROZEN;
     }
 
     @Override

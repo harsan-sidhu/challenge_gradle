@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static com.challenge.order.OrderType.OVERFLOW;
+
 public class OverflowShelf extends BasicShelf {
 
     private static final int OVERFLOW_SHELF_CAPACITY = 20;
@@ -66,8 +68,8 @@ public class OverflowShelf extends BasicShelf {
     }
 
     @Override
-    public String getType() {
-        return "overflow";
+    public OrderType getType() {
+        return OVERFLOW;
     }
 
     @Override
