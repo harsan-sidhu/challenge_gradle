@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main {
@@ -38,12 +39,13 @@ public class Main {
         ui.show();
 
         // Begin Processing Orders
+        ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(4);
         Kitchen kitchen = new Kitchen(shelves, ui);
         OrderFulfiller orderFulfiller
                 = new OrderFulfiller(
-                new ScheduledThreadPoolExecutor(4),
+                executor,
                 kitchen,
-                new DeliveryPickupDispatcher(kitchen));
+                new DeliveryPickupDispatcher(executor, kitchen));
         orderFulfiller.placeOrders(orderQueue, new PoissonDistribution(3.25));
 
     }

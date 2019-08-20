@@ -11,21 +11,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-class OrderFulfiller {
+public class OrderFulfiller {
 
     private final ScheduledExecutorService executorService;
     private final Kitchen kitchen;
-    private final DeliveryPickupDispatcher deliveryPickupDispatcher;
+    private final DeliveryPickupDispatcher dispatcher;
 
-    OrderFulfiller(ScheduledExecutorService executorService,
+    public OrderFulfiller(ScheduledExecutorService executorService,
                    Kitchen kitchen,
-                   DeliveryPickupDispatcher deliveryPickupDispatcher) {
+                   DeliveryPickupDispatcher dispatcher) {
         this.executorService = executorService;
         this.kitchen = kitchen;
-        this.deliveryPickupDispatcher = deliveryPickupDispatcher;
+        this.dispatcher = dispatcher;
     }
 
-    void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
+    public void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
         executorService.scheduleAtFixedRate(
                 () -> placeOrderOrShutdown(orderQueue, poissonDistribution),
                 /* initialDelay */ 0,
@@ -33,7 +33,7 @@ class OrderFulfiller {
                 TimeUnit.SECONDS);
     }
 
-    private void placeOrderOrShutdown(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
+    public void placeOrderOrShutdown(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
         if (orderQueue.isEmpty() && kitchen.isEmpty()) {
             executorService.shutdown();
         } else {
@@ -48,7 +48,7 @@ class OrderFulfiller {
                     Delivery delivery = new Delivery(placedOrder, orderTimeStamp, timeToPickUpOrder);
 
                     if (kitchen.addOrderToShelves(delivery)) {
-                        deliveryPickupDispatcher.dispatchPickupForOrder(delivery, timeToPickUpOrder);
+                        dispatcher.dispatchPickupForOrder(delivery, timeToPickUpOrder);
                     }
                 }
             }
