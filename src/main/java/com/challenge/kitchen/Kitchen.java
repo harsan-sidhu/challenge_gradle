@@ -1,7 +1,7 @@
 package com.challenge.kitchen;
 
 import com.challenge.order.Delivery;
-import com.challenge.order.OrderValueCalculator;
+import com.challenge.order.OrderType;
 import com.challenge.shelf.BasicShelf;
 import com.challenge.shelf.OverflowShelf;
 import com.challenge.shelf.Shelf;
@@ -9,7 +9,8 @@ import com.challenge.ui.DispatcherUICallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
+
+import static com.challenge.order.OrderType.*;
 
 public class Kitchen {
 
@@ -29,7 +30,7 @@ public class Kitchen {
     }
 
     public synchronized boolean addOrderToShelves(Delivery order) {
-        boolean wasAddedToShelf = false;
+        boolean wasAddedToShelf;
 
         maybeTrashSpoiledOrders();
 
@@ -43,6 +44,8 @@ public class Kitchen {
             case FROZEN:
                 wasAddedToShelf = frozenShelf.add(order);
                 break;
+            default:
+                throw new IllegalStateException("Unrecognized OrderType: " + order.getOrder().getTemp());
         }
 
         if (!wasAddedToShelf) {
@@ -62,31 +65,36 @@ public class Kitchen {
     }
 
     public synchronized boolean removeOrderFromShelves(Delivery order) {
-        boolean wasRemovedFromShelf = false;
+        boolean wasRemovedFromShelf;
+        OrderType removedOrderType;
 
         maybeTrashSpoiledOrders();
 
         switch (order.getOrder().getTemp()) {
             case HOT:
                 wasRemovedFromShelf = hotShelf.remove(order);
+                removedOrderType = HOT;
                 break;
             case COLD:
                 wasRemovedFromShelf = coldShelf.remove(order);
+                removedOrderType = COLD;
                 break;
             case FROZEN:
                 wasRemovedFromShelf = frozenShelf.remove(order);
+                removedOrderType = FROZEN;
                 break;
+            default:
+                throw new IllegalStateException("Unrecognized OrderType: " + order.getOrder().getTemp());
         }
 
         if (!wasRemovedFromShelf) {
             wasRemovedFromShelf = overFlowShelf.remove(order);
+        } else {
+            Delivery deliveryToMove = overFlowShelf.removeHighestPriorityOrder(removedOrderType);
+            if (deliveryToMove != null) {
+                addOrderToShelves(deliveryToMove);
+            }
         }
-
-        /*if (wasRemovedFromShelf) {
-            addOrderToShelves(overFlowShelf.removeHighestPriorityOrder("hot"));
-        }*/
-
-        //maybeMoveOverFlowOrders();
 
         updateUi();
 
