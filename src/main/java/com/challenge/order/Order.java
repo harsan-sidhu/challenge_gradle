@@ -8,6 +8,10 @@ import com.google.gson.annotations.SerializedName;
 @AutoValue
 public abstract class Order {
 
+    public static Order create(String name, OrderType orderType, Integer shelfLife, Double decayRate) {
+        return new AutoValue_Order(name, orderType, shelfLife, decayRate);
+    }
+
     @SerializedName("name")
     public abstract String getName();
 
