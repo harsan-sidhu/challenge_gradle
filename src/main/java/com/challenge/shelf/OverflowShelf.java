@@ -87,18 +87,27 @@ public class OverflowShelf extends BasicShelf {
     }
 
     public Delivery removeHighestPriorityOrder(OrderType type) {
-        Delivery highestPriorityOrderToMove = null;
+        Delivery highestPriorityOrderToMove;
 
         switch (type) {
             case HOT:
-                return hotOrderPriorityQueue.poll();
+                highestPriorityOrderToMove = hotOrderPriorityQueue.poll();
+                break;
             case COLD:
-                return coldOrderPriorityQueue.poll();
+                highestPriorityOrderToMove = coldOrderPriorityQueue.poll();
+                break;
             case FROZEN:
-                return frozenOrderPriorityQueue.poll();
+                highestPriorityOrderToMove = frozenOrderPriorityQueue.poll();
+                break;
             default:
-                return highestPriorityOrderToMove;
+                throw new IllegalStateException("Unrecognized OrderType: " + type);
         }
+
+        if (highestPriorityOrderToMove != null) {
+            remove(highestPriorityOrderToMove);
+        }
+
+        return highestPriorityOrderToMove;
     }
 
     public static class DeliveryPriorityComparator implements Comparator<Delivery> {

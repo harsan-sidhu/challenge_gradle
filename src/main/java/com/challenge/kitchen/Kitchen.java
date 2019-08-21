@@ -89,9 +89,9 @@ public class Kitchen {
         if (!wasRemovedFromShelf) {
             wasRemovedFromShelf = overFlowShelf.remove(order);
         } else {
-            Delivery deliveryToMove = overFlowShelf.removeHighestPriorityOrder(removedOrderType);
-            if (deliveryToMove != null) {
-                addOrderToShelves(deliveryToMove);
+            Delivery deliveryToMoveOffOverflowShelf = overFlowShelf.removeHighestPriorityOrder(removedOrderType);
+            if (deliveryToMoveOffOverflowShelf != null) {
+                addOrderToShelves(deliveryToMoveOffOverflowShelf);
             }
         }
 
