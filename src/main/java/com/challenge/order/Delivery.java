@@ -3,6 +3,9 @@ package com.challenge.order;
 import com.challenge.clock.Clock;
 import com.challenge.shelf.Shelf;
 
+/**
+ * Wraps an order when the order is placed and contains information to help calculate the value of the Delivery.
+ */
 public class Delivery {
 
     private final Order order;

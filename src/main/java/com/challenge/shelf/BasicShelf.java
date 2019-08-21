@@ -5,6 +5,9 @@ import com.challenge.order.OrderType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * A Basic implementation of a {@link Shelf} that handles most core functionality shared by different shelves
+ */
 public abstract class BasicShelf implements Shelf {
 
     private final ConcurrentLinkedQueue<Delivery> shelf;

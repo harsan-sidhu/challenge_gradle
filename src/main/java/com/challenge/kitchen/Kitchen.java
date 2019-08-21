@@ -12,6 +12,14 @@ import java.util.List;
 
 import static com.challenge.order.OrderType.*;
 
+/**
+ * Class containing all the shelves with {@link Delivery}'s
+ *
+ * This class is responsible for the following
+ * 1) Adding and removing deliveries from shelves
+ * 2) Trashing spoiled orders
+ * 3) Notifying the UI when new data is available.
+ */
 public class Kitchen {
 
     private final Shelf hotShelf;
@@ -28,6 +36,11 @@ public class Kitchen {
         this.uiCallback = dispatcherUICallback;
     }
 
+    /**
+     * @param order {@link Delivery} to add to a shelf
+     *
+     * @return true/false whether the order was added to a shelf
+     */
     public synchronized boolean addOrderToShelves(Delivery order) {
         boolean wasAddedToShelf;
 
@@ -63,6 +76,14 @@ public class Kitchen {
         overFlowShelf.maybeTrashSpoiledOrders();
     }
 
+    /**
+     * Given an order, attempt to remove it. When a delivery is removed see if we move an "at risk" delivery from the
+     * overflow shelf.
+     *
+     * @param order {@link Delivery} to remove from a shelf
+     *
+     * @return true/false whether the order was removed to a shelf
+     */
     public synchronized boolean removeOrderFromShelves(Delivery order) {
         boolean wasRemovedFromShelf;
         OrderType removedOrderType;
@@ -110,6 +131,9 @@ public class Kitchen {
         uiCallback.onDataUpdated(shelvesToDisplay);
     }
 
+    /**
+     * @return true/false based on if there are any orders left.
+     */
     public synchronized boolean isEmpty() {
         return hotShelf.isEmpty()
                 && coldShelf.isEmpty()

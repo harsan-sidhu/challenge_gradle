@@ -7,9 +7,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.challenge.order.OrderType.FROZEN;
 
+/**
+ * A {@link BasicShelf} that stores {@link OrderType#FROZEN} Deliveries
+ */
 public class FrozenShelf extends BasicShelf {
 
-    public static final double DECAY_RATE = 1;
+    static final double DECAY_RATE = 1;
 
     private static final int FROZEN_SHELF_CAPACITY = 15;
 

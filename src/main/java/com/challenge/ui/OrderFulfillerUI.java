@@ -14,6 +14,13 @@ import java.util.Map;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
+/**
+ * UI to show shelves with order and values update in realtime.
+ *
+ * Displayed as such
+ * HOT             COLD             FROZEN             OVERFLOW
+ * order1_name=.98                  order2_name=.93
+ */
 public class OrderFulfillerUI implements DispatcherUICallback {
 
     private final Map<OrderType, DefaultListModel> typeToList;

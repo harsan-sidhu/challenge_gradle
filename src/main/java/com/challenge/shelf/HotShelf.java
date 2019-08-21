@@ -7,9 +7,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.challenge.order.OrderType.HOT;
 
+/**
+ * A {@link BasicShelf} that stores {@link OrderType#HOT} Deliveries
+ */
 public class HotShelf extends BasicShelf {
 
-    public static final double DECAY_RATE = 1;
+    static final double DECAY_RATE = 1;
 
     private static final int HOT_SHELF_CAPACITY = 15;
 

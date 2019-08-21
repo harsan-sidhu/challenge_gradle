@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Data model representing an Order placed by a customer.
+ */
 @AutoValue
 public abstract class Order {
 

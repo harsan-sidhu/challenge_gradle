@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.challenge.order.OrderType.OVERFLOW;
 
+/**
+ * A {@link BasicShelf} that can store any {@link OrderType}.
+ */
 public class OverflowShelf extends BasicShelf {
 
     private static final int OVERFLOW_SHELF_CAPACITY = 20;
@@ -90,7 +93,25 @@ public class OverflowShelf extends BasicShelf {
         return 2;
     }
 
-    public synchronized Delivery removeHighestPriorityOrder(OrderType type) {
+  /**
+   * For a given {@link OrderType} on this shelf, retreive the order that is high priority.
+   *
+   * Currently, we dispatched a specific driver for a specific order.
+   *
+   * Given this, when we assign the driver with an ETA for an order pickup, we can calculate for any order its normalized
+   * value upon pick up. This is because the order age will equal the ETA.
+   *
+   * As a result, any time an order is added to the overflow shelf, we perform the above
+   * calculation to deem whether the item is "at risk", it's normalized value would reach zero if
+   * left on that shelf. If this is the case, it'll be added to a Priority Queue sorted by the value
+   * it would have if moved to its temperature appropriate shelf. When an order is removed we then
+   * ask the overflow shelf to give us the most "at risk" order for the shelf an item was just
+   * removed from, then add it to the temperate appropriate shelf.
+   *
+   * @param type {@link OrderType} of the order to return.
+   * @return {@link Delivery} most likely of spoiling.
+   */
+  public synchronized Delivery removeHighestPriorityOrder(OrderType type) {
         Delivery highestPriorityOrderToMove;
 
         switch (type) {
@@ -114,6 +135,10 @@ public class OverflowShelf extends BasicShelf {
         return highestPriorityOrderToMove;
     }
 
+    /**
+     * Compares orders if they were placed on their temperature specific shelf taking into account their current decayed
+     * values.
+     */
     public static class DeliveryPriorityComparator implements Comparator<Delivery> {
         @Override
         public int compare(Delivery o1, Delivery o2) {

@@ -23,6 +23,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+/**
+ * Responsible for executing the order simulation in the following steps
+ *
+ * 1) Parse the "orders.json" file
+ * 2) Create Shelves, UI, Kitchen, and OrderFulfiller
+ * 3) Begin placing orders
+ */
 public class Main {
 
     public static void main(String[] args) throws IOException {

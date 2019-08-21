@@ -12,6 +12,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class responsible for placing orders through a {@link Kitchen} and ensuring they are picked up via
+ * @link DeliveryPickupDispatcher}.
+ */
 public class OrderFulfiller {
 
     private final ScheduledExecutorService executorService;
@@ -30,6 +34,12 @@ public class OrderFulfiller {
         this.clock = clock;
     }
 
+    /**
+     * Place orders every second with the given {@link PoissonDistribution}.
+     *
+     * @param orderQueue Queue of orders to be fulfilled.
+     * @param poissonDistribution {@link PoissonDistribution} used to determine how many orders to place per second.
+     */
     public void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
         executorService.scheduleAtFixedRate(
                 () -> placeOrderOrShutdown(orderQueue, poissonDistribution),
@@ -38,7 +48,8 @@ public class OrderFulfiller {
                 TimeUnit.SECONDS);
     }
 
-    public void placeOrderOrShutdown(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
+    // Separated for easier testability
+    void placeOrderOrShutdown(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
         if (orderQueue.isEmpty() && kitchen.isEmpty()) {
             executorService.shutdown();
         } else {
@@ -57,6 +68,5 @@ public class OrderFulfiller {
                 }
             }
         }
-
     }
 }
