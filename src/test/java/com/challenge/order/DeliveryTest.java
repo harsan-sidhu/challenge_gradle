@@ -36,7 +36,7 @@ class DeliveryTest {
 
         double orderValue = delivery.getValue();
 
-        Assert.assertEquals(.5026666666666667, orderValue, 0);
+        Assert.assertEquals(0.478, orderValue, 0);
     }
 
     @Test
@@ -49,7 +49,7 @@ class DeliveryTest {
 
         double orderValue = delivery.getValue();
 
-        Assert.assertEquals(.30533333333333335, orderValue, 0);
+        Assert.assertEquals(0.256, orderValue, 0);
     }
 
     private OverflowShelf createOverflowShelf() {

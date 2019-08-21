@@ -39,8 +39,11 @@ public class Delivery {
     }
 
     public synchronized void setShelf(Shelf shelf) {
+        if (this.shelf != null) {
+            decayedValue = computeDecay();
+        }
+
         this.shelf = shelf;
-        decayedValue = computeDecay();
     }
 
     public synchronized Shelf getShelf() {
