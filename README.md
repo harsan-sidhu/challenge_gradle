@@ -29,18 +29,15 @@ Currently, we dispatched a specific driver for a specific order.
 Given this, when we assign the driver with an ETA for an order pickup, we can calculate for any order its normalized
 value upon pick up. This is because the order age will equal the ETA.
 
-As a result, any time an item is moved off of the shelf and there are items on the overflow shelf, we'll check to see if
-the value of any of the orders on the overflow shelf would reach 0 given the decayRate of the overflow shelf.
-If that is the case, we'll do another check to see whether moving it to a non overflow shelf will "save" the order. If
-that is the case, we'll move the temperature specific orders to their corresponding shelf until they reach capacity.
+As a result, any time an order is added to the overflow shelf, we perform the above calculation to deem whether the item
+is "at risk", it's normalized value would reach zero if left on that shelf. If this is the case, it'll be added to a
+Priority Queue sorted by the value it would have if moved to its temperature appropriate shelf. When an order is removed
+we then ask the overflow shelf to give us the most "at risk" order for the shelf an item was just removed from, then add
+it to the temperate appropriate shelf.
 
-Potential Future Approachs:
+Potential Future Approaches:
 
-1) An improvement on this existing algorithm would be to perform this calculation the moment the order is placed and
-   ensure that an item of this nature never makes it to the overflow shelf in the first place. However, if all the
-   shelves are full, we'll fallback to our original approach as items are removed from temperature specific shelves.
-
-2) Instead of strictly tying a driver to a specific order, we can simply dispatch a driver when an order is placed. That
+1) Instead of strictly tying a driver to a specific order, we can simply dispatch a driver when an order is placed. That
    driver can arrive at the facility and pick up any order.
 
    Then we can sort the orders by the age required for the value to hit 0. This can be calculated by using 0 as the

@@ -32,7 +32,8 @@ public class OverflowShelf extends BasicShelf {
 
     @Override
     public synchronized boolean add(Delivery order) {
-        if (calculateOrderValueAtPickupOnOverFlowShelf(order) <= 0) {
+        boolean wasAdded = super.add(order);
+        if (wasAdded && calculateOrderValueAtPickupOnOverFlowShelf(order) <= 0) {
             switch (order.getOrder().getTemp()) {
                 case HOT:
                     hotOrderPriorityQueue.add(order);
@@ -45,7 +46,7 @@ public class OverflowShelf extends BasicShelf {
                     break;
             }
         }
-        return super.add(order);
+        return wasAdded;
     }
 
     private double calculateOrderValueAtPickupOnOverFlowShelf(Delivery delivery) {
@@ -56,19 +57,22 @@ public class OverflowShelf extends BasicShelf {
 
     @Override
     public synchronized boolean remove(Delivery order) {
-        switch (order.getOrder().getTemp()) {
-            case HOT:
-                hotOrderPriorityQueue.remove(order);
-                break;
-            case COLD:
-                coldOrderPriorityQueue.remove(order);
-                break;
-            case FROZEN:
-                frozenOrderPriorityQueue.remove(order);
-                break;
+        boolean wasRemoved = super.remove(order);
+        if (wasRemoved) {
+            switch (order.getOrder().getTemp()) {
+                case HOT:
+                    hotOrderPriorityQueue.remove(order);
+                    break;
+                case COLD:
+                    coldOrderPriorityQueue.remove(order);
+                    break;
+                case FROZEN:
+                    frozenOrderPriorityQueue.remove(order);
+                    break;
+            }
         }
 
-        return super.remove(order);
+        return wasRemoved;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class OverflowShelf extends BasicShelf {
         return 2;
     }
 
-    public Delivery removeHighestPriorityOrder(OrderType type) {
+    public synchronized Delivery removeHighestPriorityOrder(OrderType type) {
         Delivery highestPriorityOrderToMove;
 
         switch (type) {
@@ -113,7 +117,7 @@ public class OverflowShelf extends BasicShelf {
     public static class DeliveryPriorityComparator implements Comparator<Delivery> {
         @Override
         public int compare(Delivery o1, Delivery o2) {
-            return (int) (calculateOrderValueOnTargetShelf(o1) - calculateOrderValueOnTargetShelf(o2));
+            return Double.compare(calculateOrderValueOnTargetShelf(o1), calculateOrderValueOnTargetShelf(o2));
         }
     }
 
