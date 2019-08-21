@@ -1,8 +1,10 @@
 package com.challenge.kitchen;
 
 import com.challenge.order.Delivery;
-import com.challenge.order.Order;
-import com.challenge.shelf.*;
+import com.challenge.shelf.ColdShelf;
+import com.challenge.shelf.FrozenShelf;
+import com.challenge.shelf.HotShelf;
+import com.challenge.shelf.OverflowShelf;
 import com.challenge.ui.DispatcherUICallback;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 
-import static com.challenge.order.OrderType.*;
+import static com.challenge.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -170,18 +172,5 @@ class KitchenTest {
         verify(uiCallback).onDataUpdated(any());
     }
 
-
-
-
-    private static Order createHotOrder() {
-        return Order.create("Beef Hash", HOT, 30, 0.74);
-    }
-
-    private static Order createColdOrder() {
-        return Order.create("Sushi", COLD, 251, 0.25);
-    }
-
-    private static Order createFrozenOrder() {
-        return Order.create("Icy", FROZEN, 230, 0.6);
-    }
+    //TODO Test removeHighestPriorityOrder
 }

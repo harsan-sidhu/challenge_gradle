@@ -14,16 +14,20 @@ public class OverflowShelf extends BasicShelf {
 
     private static final int OVERFLOW_SHELF_CAPACITY = 20;
 
-    private final PriorityQueue<Delivery> hotShelfPriorityQueue;
-    private final PriorityQueue<Delivery> coldShelfPriorityQueue;
-    private final PriorityQueue<Delivery> frozenShelfPriorityQueue;
+    private final PriorityQueue<Delivery> hotOrderPriorityQueue;
+    private final PriorityQueue<Delivery> coldOrderPriorityQueue;
+    private final PriorityQueue<Delivery> frozenOrderPriorityQueue;
 
-    public OverflowShelf(ConcurrentLinkedQueue<Delivery> overFlowShelf) {
+    public OverflowShelf(
+            ConcurrentLinkedQueue<Delivery> overFlowShelf,
+            PriorityQueue<Delivery> hotOrderPriorityQueue,
+            PriorityQueue<Delivery> coldOrderPriorityQueue,
+            PriorityQueue<Delivery> frozenOrderPriorityQueue) {
         super(overFlowShelf);
 
-        hotShelfPriorityQueue = new PriorityQueue<>(new DeliveryPriorityComparator());
-        coldShelfPriorityQueue = new PriorityQueue<>(new DeliveryPriorityComparator());
-        frozenShelfPriorityQueue = new PriorityQueue<>(new DeliveryPriorityComparator());
+        this.hotOrderPriorityQueue = hotOrderPriorityQueue;
+        this.coldOrderPriorityQueue = coldOrderPriorityQueue;
+        this.frozenOrderPriorityQueue = frozenOrderPriorityQueue;
     }
 
     @Override
@@ -31,13 +35,13 @@ public class OverflowShelf extends BasicShelf {
         if (calculateOrderValueAtPickupOnOverFlowShelf(order) <= 0) {
             switch (order.getOrder().getTemp()) {
                 case HOT:
-                    hotShelfPriorityQueue.add(order);
+                    hotOrderPriorityQueue.add(order);
                     break;
                 case COLD:
-                    coldShelfPriorityQueue.add(order);
+                    coldOrderPriorityQueue.add(order);
                     break;
                 case FROZEN:
-                    frozenShelfPriorityQueue.add(order);
+                    frozenOrderPriorityQueue.add(order);
                     break;
             }
         }
@@ -54,13 +58,13 @@ public class OverflowShelf extends BasicShelf {
     public synchronized boolean remove(Delivery order) {
         switch (order.getOrder().getTemp()) {
             case HOT:
-                hotShelfPriorityQueue.remove(order);
+                hotOrderPriorityQueue.remove(order);
                 break;
             case COLD:
-                coldShelfPriorityQueue.remove(order);
+                coldOrderPriorityQueue.remove(order);
                 break;
             case FROZEN:
-                frozenShelfPriorityQueue.remove(order);
+                frozenOrderPriorityQueue.remove(order);
                 break;
         }
 
@@ -87,17 +91,17 @@ public class OverflowShelf extends BasicShelf {
 
         switch (type) {
             case HOT:
-                return hotShelfPriorityQueue.poll();
+                return hotOrderPriorityQueue.poll();
             case COLD:
-                return coldShelfPriorityQueue.poll();
+                return coldOrderPriorityQueue.poll();
             case FROZEN:
-                return frozenShelfPriorityQueue.poll();
+                return frozenOrderPriorityQueue.poll();
             default:
                 return highestPriorityOrderToMove;
         }
     }
 
-    private static class DeliveryPriorityComparator implements Comparator<Delivery> {
+    public static class DeliveryPriorityComparator implements Comparator<Delivery> {
         @Override
         public int compare(Delivery o1, Delivery o2) {
             return (int) (calculateOrderValueOnTargetShelf(o1) - calculateOrderValueOnTargetShelf(o2));

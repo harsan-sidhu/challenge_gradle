@@ -9,7 +9,7 @@ import static com.challenge.order.OrderType.HOT;
 
 public class HotShelf extends BasicShelf {
 
-    static final double DECAY_RATE = 1;
+    public static final double DECAY_RATE = 1;
 
     private static final int HOT_SHELF_CAPACITY = 15;
 

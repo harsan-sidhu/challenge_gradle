@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -31,7 +32,11 @@ public class Main {
                 new HotShelf(new ConcurrentLinkedQueue<>()),
                 new ColdShelf(new ConcurrentLinkedQueue<>()),
                 new FrozenShelf(new ConcurrentLinkedQueue<>()),
-                new OverflowShelf(new ConcurrentLinkedQueue<>()));
+                new OverflowShelf(
+                        new ConcurrentLinkedQueue<>(),
+                        new PriorityQueue<>(new OverflowShelf.DeliveryPriorityComparator()),
+                        new PriorityQueue<>(new OverflowShelf.DeliveryPriorityComparator()),
+                        new PriorityQueue<>(new OverflowShelf.DeliveryPriorityComparator())));
 
         OrderFulfillerUI ui = new OrderFulfillerUI(getConfigurationForShelves(shelves));
         ui.show();
