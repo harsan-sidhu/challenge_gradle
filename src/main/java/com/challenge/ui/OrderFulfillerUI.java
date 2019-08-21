@@ -8,9 +8,8 @@ import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -63,6 +62,8 @@ public class OrderFulfillerUI implements DispatcherUICallback {
                                 if (entry.getKey().equals(shelf.getType())) {
                                     DefaultListModel listModelForShelf = entry.getValue();
                                     listModelForShelf.clear();
+                                    // Sort orders by value. Can customize this in the future
+                                    Collections.sort(shelf.getOrders(), Comparator.comparingDouble(Delivery::getValue));
                                     for (Delivery order : shelf.getOrders()) {
                                         listModelForShelf.addElement(new Pair(order.getOrder().getName(), order.getValue()));
                                     }

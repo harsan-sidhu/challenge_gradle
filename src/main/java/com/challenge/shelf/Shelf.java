@@ -3,7 +3,7 @@ package com.challenge.shelf;
 import com.challenge.order.Delivery;
 import com.challenge.order.OrderType;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
 
 public interface Shelf {
 
@@ -15,7 +15,7 @@ public interface Shelf {
     /**
      * @return List of the current {@link Delivery}'s on this shelf
      */
-    ConcurrentLinkedQueue<Delivery> getOrders();
+    List<Delivery> getOrders();
 
     /**
      * @param order {@link Delivery} to attempt to add to this shelf.

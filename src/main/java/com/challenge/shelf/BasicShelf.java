@@ -3,6 +3,8 @@ package com.challenge.shelf;
 import com.challenge.order.Delivery;
 import com.challenge.order.OrderType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -17,8 +19,8 @@ public abstract class BasicShelf implements Shelf {
     }
 
     @Override
-    public synchronized ConcurrentLinkedQueue<Delivery> getOrders() {
-        return new ConcurrentLinkedQueue<>(shelf);
+    public synchronized List<Delivery> getOrders() {
+        return new ArrayList<>(shelf);
     }
 
     @Override
