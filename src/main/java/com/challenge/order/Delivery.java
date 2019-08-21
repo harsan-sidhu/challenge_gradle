@@ -1,31 +1,29 @@
 package com.challenge.order;
 
+import com.challenge.clock.Clock;
 import com.challenge.shelf.Shelf;
-
-import java.util.concurrent.TimeUnit;
 
 public class Delivery {
 
     private final Order order;
     private final long orderPlacedTimeStamp;
     private final int pickupTime;
+    private final Clock clock;
+
     private Shelf shelf;
     private double decayedValue;
 
-    public Delivery(Order order, long orderPlacedTimeStamp, int pickupTime) {
+    public Delivery(Order order, long orderPlacedTimeStamp, int pickupTime, Clock clock) {
         this.order = order;
         this.orderPlacedTimeStamp = orderPlacedTimeStamp;
         this.pickupTime = pickupTime;
+        this.clock = clock;
 
         decayedValue = 0.0;
     }
 
     public Order getOrder() {
         return order;
-    }
-
-    private long getOrderPlacedTimeStamp() {
-        return orderPlacedTimeStamp;
     }
 
     public int getPickupTime() {
@@ -47,7 +45,7 @@ public class Delivery {
     }
 
     private long getAge() {
-        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - getOrderPlacedTimeStamp());
+        return clock.getCurrentTimeInSeconds() - orderPlacedTimeStamp;
     }
 
     public double getDecayedValue() {

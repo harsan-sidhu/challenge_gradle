@@ -3,6 +3,7 @@ package com.challenge.shelf;
 import static org.junit.Assert.assertTrue;
 
 import com.challenge.TestUtils;
+import com.challenge.clock.Clock;
 import com.challenge.order.Delivery;
 import com.challenge.order.Order;
 import com.challenge.order.OrderType;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.mockito.Mockito.*;
 
-public class OverflowShelfTest {
+class OverflowShelfTest {
 
     private OverflowShelf overflowShelf;
 
@@ -25,6 +26,7 @@ public class OverflowShelfTest {
     @Mock private PriorityQueue<Delivery> hotOrderPriorityQueue;
     @Mock private PriorityQueue<Delivery> coldOrderPriorityQueue;
     @Mock private PriorityQueue<Delivery> frozenOrderPriorityQueue;
+    @Mock private Clock clock;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +43,7 @@ public class OverflowShelfTest {
     @Test
     void whenHotOrderValueAtPickupOnOverFlowIsLessThanZero_add_addToHotOrderPriorityQueue() {
         Order atRiskOrder = Order.create("Beef Hash", OrderType.HOT, 15, .8);
-        Delivery delivery = new Delivery(atRiskOrder, 1, 10);
+        Delivery delivery = new Delivery(atRiskOrder, 1, 10, clock);
 
         overflowShelf.add(delivery);
 
@@ -51,7 +53,7 @@ public class OverflowShelfTest {
     @Test
     void whenColdOrderValueAtPickupOnOverFlowIsLessThanZero_add_addToColdOrderPriorityQueue() {
         Order atRiskOrder = Order.create("Sushi", OrderType.COLD, 15, .8);
-        Delivery delivery = new Delivery(atRiskOrder, 1, 10);
+        Delivery delivery = new Delivery(atRiskOrder, 1, 10, clock);
 
         overflowShelf.add(delivery);
 
@@ -61,7 +63,7 @@ public class OverflowShelfTest {
     @Test
     void whenFrozenOrderValueAtPickupOnOverFlowIsLessThanZero_add_addToFrozenOrderPriorityQueue() {
         Order atRiskOrder = Order.create("Icy", OrderType.FROZEN, 15, .8);
-        Delivery delivery = new Delivery(atRiskOrder, 1, 10);
+        Delivery delivery = new Delivery(atRiskOrder, 1, 10, clock);
 
         overflowShelf.add(delivery);
 
@@ -71,7 +73,7 @@ public class OverflowShelfTest {
     @Test
     void whenOrderValueAtPickupOnOverFlowIsMoreThanZero_add_doNotAddToOrderPriorityQueue() {
         Order atRiskOrder = Order.create("Beef Hash", OrderType.HOT, 300, .6);
-        Delivery delivery = new Delivery(atRiskOrder, 1, 4);
+        Delivery delivery = new Delivery(atRiskOrder, 1, 4, clock);
 
         overflowShelf.add(delivery);
 
@@ -80,7 +82,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenRemoveHotOrder_remove_removeHotOrderFromShelf() {
-        Delivery delivery = new Delivery(TestUtils.createHotOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createHotOrder(), 1, 1, clock);
 
         overflowShelf.remove(delivery);
 
@@ -89,7 +91,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenRemoveColdOrder_remove_removeColdOrderFromShelf() {
-        Delivery delivery = new Delivery(TestUtils.createColdOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createColdOrder(), 1, 1, clock);
 
         overflowShelf.remove(delivery);
 
@@ -98,7 +100,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenRemoveFrozenOrder_remove_removeFrozenOrderFromShelf() {
-        Delivery delivery = new Delivery(TestUtils.createFrozenOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createFrozenOrder(), 1, 1, clock);
 
         overflowShelf.remove(delivery);
 
@@ -107,7 +109,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenHotOrderType_removeHighestPriorityOrder_removeDeliveryFromQueue() {
-        Delivery delivery = new Delivery(TestUtils.createHotOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createHotOrder(), 1, 1, clock);
         when(hotOrderPriorityQueue.poll()).thenReturn(delivery);
 
         Delivery highestPriorityDelivery = overflowShelf.removeHighestPriorityOrder(OrderType.HOT);
@@ -117,7 +119,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenColdOrderType_removeHighestPriorityOrder_removeDeliveryFromQueue() {
-        Delivery delivery = new Delivery(TestUtils.createColdOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createColdOrder(), 1, 1, clock);
         when(coldOrderPriorityQueue.poll()).thenReturn(delivery);
 
         Delivery highestPriorityDelivery = overflowShelf.removeHighestPriorityOrder(OrderType.COLD);
@@ -127,7 +129,7 @@ public class OverflowShelfTest {
 
     @Test
     void whenFrozenOrderType_removeHighestPriorityOrder_removeDeliveryFromQueue() {
-        Delivery delivery = new Delivery(TestUtils.createFrozenOrder(), 1, 1);
+        Delivery delivery = new Delivery(TestUtils.createFrozenOrder(), 1, 1, clock);
         when(frozenOrderPriorityQueue.poll()).thenReturn(delivery);
 
         Delivery highestPriorityDelivery = overflowShelf.removeHighestPriorityOrder(OrderType.FROZEN);

@@ -1,5 +1,6 @@
 package com.challenge;
 
+import com.challenge.clock.Clock;
 import com.challenge.dispatcher.DeliveryPickupDispatcher;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Delivery;
@@ -25,13 +26,14 @@ class OrderFulfillerTest {
     @Mock private ScheduledExecutorService executor;
     @Mock private Kitchen kitchen;
     @Mock private DeliveryPickupDispatcher dispatcher;
+    @Mock private Clock clock;
     @Mock private PoissonDistribution poissonDistribution;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        orderFulfiller = new OrderFulfiller(executor, kitchen, dispatcher);
+        orderFulfiller = new OrderFulfiller(executor, kitchen, dispatcher, clock);
     }
 
     @Test

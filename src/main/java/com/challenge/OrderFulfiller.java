@@ -1,5 +1,6 @@
 package com.challenge;
 
+import com.challenge.clock.Clock;
 import com.challenge.dispatcher.DeliveryPickupDispatcher;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Delivery;
@@ -16,13 +17,17 @@ public class OrderFulfiller {
     private final ScheduledExecutorService executorService;
     private final Kitchen kitchen;
     private final DeliveryPickupDispatcher dispatcher;
+    private final Clock clock;
 
-    public OrderFulfiller(ScheduledExecutorService executorService,
-                   Kitchen kitchen,
-                   DeliveryPickupDispatcher dispatcher) {
+    public OrderFulfiller(
+            ScheduledExecutorService executorService,
+            Kitchen kitchen,
+            DeliveryPickupDispatcher dispatcher,
+            Clock clock) {
         this.executorService = executorService;
         this.kitchen = kitchen;
         this.dispatcher = dispatcher;
+        this.clock = clock;
     }
 
     public void placeOrders(Queue<Order> orderQueue, PoissonDistribution poissonDistribution) {
@@ -42,10 +47,9 @@ public class OrderFulfiller {
                 if (!orderQueue.isEmpty()) {
                     Order placedOrder = orderQueue.poll();
 
-                    // TODO Careful with using the system clock directly. It'll make testing hard. Consider creating a Clock interface, and creating an implementation for testing and for this app.
-                    long orderTimeStamp = System.currentTimeMillis();
+                    long orderTimeStamp = clock.getCurrentTimeInSeconds();
                     int timeToPickUpOrder = ThreadLocalRandom.current().nextInt(2, 10 + 1);
-                    Delivery delivery = new Delivery(placedOrder, orderTimeStamp, timeToPickUpOrder);
+                    Delivery delivery = new Delivery(placedOrder, orderTimeStamp, timeToPickUpOrder, clock);
 
                     if (kitchen.addOrderToShelves(delivery)) {
                         dispatcher.dispatchPickupForOrder(delivery, timeToPickUpOrder);

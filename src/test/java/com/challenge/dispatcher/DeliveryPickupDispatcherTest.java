@@ -1,5 +1,6 @@
 package com.challenge.dispatcher;
 
+import com.challenge.clock.Clock;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.Delivery;
 import com.challenge.order.Order;
@@ -19,6 +20,7 @@ class DeliveryPickupDispatcherTest {
 
     @Mock private ScheduledExecutorService executor;
     @Mock private Kitchen kitchen;
+    @Mock private Clock clock;
 
 
     @BeforeEach
@@ -30,7 +32,7 @@ class DeliveryPickupDispatcherTest {
 
     @Test
     void dispatchPickupForOrder_removeOrderFromShelf() {
-        Delivery delivery = new Delivery(mock(Order.class), 1, 1);
+        Delivery delivery = new Delivery(mock(Order.class), 1, 1, clock);
 
         deliveryPickupDispatcher.removeOrderFromShelf(delivery);
 

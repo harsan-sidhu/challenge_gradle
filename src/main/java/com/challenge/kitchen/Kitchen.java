@@ -20,7 +20,6 @@ public class Kitchen {
     private final OverflowShelf overFlowShelf;
     private final DispatcherUICallback uiCallback;
 
-    //TODO: I would just initalize your shelves in this constructor. No need to pass them in, unless you want to test other scenarios.
     public Kitchen(List<BasicShelf> shelves, DispatcherUICallback dispatcherUICallback) {
         hotShelf = shelves.get(0);
         coldShelf = shelves.get(1);

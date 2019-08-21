@@ -1,5 +1,6 @@
 package com.challenge;
 
+import com.challenge.clock.Clock;
 import com.challenge.dispatcher.DeliveryPickupDispatcher;
 import com.challenge.kitchen.Kitchen;
 import com.challenge.order.AutoValueGsonFactory;
@@ -47,7 +48,8 @@ public class Main {
                 = new OrderFulfiller(
                 executor,
                 kitchen,
-                new DeliveryPickupDispatcher(executor, kitchen));
+                new DeliveryPickupDispatcher(executor, kitchen),
+                new Clock());
         orderFulfiller.placeOrders(orderQueue, new PoissonDistribution(3.25));
     }
 
